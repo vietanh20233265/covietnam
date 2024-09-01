@@ -1,0 +1,103 @@
+#include<graphics.h>
+#include<math.h>
+#define Round(a) (int)(a+0.5)
+#define DELAY 10
+#define color  YELLOW
+ 
+void lineBresenham(int x1, int y1, int x2, int y2) 
+{ 
+    int c2, c, Dx, Dy, x, y;
+    Dx = abs(x2 - x1);
+    Dy = abs(y2 - y1);
+    c = Dx - Dy;
+    c2 = 2*c;
+    x = x1;
+    y = y1;
+ 
+    int x_unit = 1, y_unit = 1;
+ 
+    if (x2 - x1 < 0)
+        x_unit = -x_unit;
+    if (y2 - y1 < 0)
+        y_unit = -y_unit;
+ 
+    putpixel(x, y, color);
+    if (x1 == x2) 
+    {
+        while (y != y2)
+        {
+            delay(DELAY);
+            y += y_unit;
+            putpixel(x, y, color);
+        }
+    }
+    else if (y1 == y2) 
+    {
+        while (x != x2)
+        {
+            delay(DELAY);
+            x += x_unit;
+            putpixel(x, y, color);
+        }
+    }
+    else if (x1 != x2 && y1 != y2)   
+    {
+        while(x != x2+1)
+        {
+            delay(DELAY);
+            c2 =2*c;
+            if (c2 > -Dy)    
+            {
+                c = c - Dy;    
+                x = x + x_unit;
+            }
+            if (c2 < Dx)    
+            {
+                c = c + Dx;    
+                y = y + y_unit; 
+            }
+            putpixel(x, y, color);
+        }
+    }
+}
+ 
+void star(int R)
+{
+ 
+    int x[5], y[5];
+    float goc = (float)-90*M_PI/180;  
+    int x0 = getmaxx()/2, y0 = getmaxy()/2;    
+    for (int i=0; i<5; i++)   
+    {
+        x[i] = x0 + Round(R*cos(goc));
+        y[i] = y0 + Round(R*sin(goc));
+        goc += (float)72*M_PI/180;
+        
+    }
+    for (int i=0, j = 4; i<5; i++)   
+    {
+        delay(DELAY);
+        lineBresenham(x[j],y[j],x[(j+2)%5],y[(j+2)%5]);
+        j = (j + 2)%5;
+    }
+ 
+    int fun = 30;
+    delay(DELAY*fun); setcolor(color);   
+    delay(DELAY*fun); floodfill(x0,y0,color);       
+    delay(DELAY*fun); floodfill(x0, y0 - R/3 - 1,color);       
+    delay(DELAY*fun); floodfill(x0 - R/3 - 1, y0,color);        
+    delay(DELAY*fun); floodfill(x0 + R/3 + 1, y0,color);       
+    delay(DELAY*fun); floodfill(x0 - R/3 - 1, y0 + R/3,color);   
+    delay(DELAY*fun); floodfill(x0 + R/3 - 1, y0 + R/3 + 1,color);    
+}
+int main(){
+	int gd, gm;
+	initgraph(&gd, &gm, NULL);
+	setbkcolor(RED);
+	cleardevice();
+	star(100);
+	getcolor();
+	getchar();
+	closegraph();
+	return 0;
+}
